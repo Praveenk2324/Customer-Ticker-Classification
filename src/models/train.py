@@ -6,7 +6,8 @@ from datasets import load_from_disk
 from transformers import (
     AutoModelForSequenceClassification,
     TrainingArguments,
-    Trainer
+    Trainer,
+    AutoTokenizer
 )
 from sklearn.metrics import accuracy_score, f1_score
 import mlflow
@@ -94,6 +95,8 @@ def run_training():
         print(f"\n6. Saving the best model to {MODEL_OUTPUT_DIR}...")
         trainer.save_model(MODEL_OUTPUT_DIR)
 
+        tokenizer = AutoTokenizer.from_pretrained("models/ticket_tokenizer")
+        
         mlflow.transformers.log_model(
             transformers_model={"model": trainer.model, "tokenizer":trainer.tokenizer},
             artifact_path="huggingface_model"
