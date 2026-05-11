@@ -29,14 +29,18 @@ MODEL_NAME = "distilbert-base-uncased"
 os.environ["MLFLOW_EXPERIMENT_NAME"] = "IT_Support_Ticket_Classification"
 
 def compute_metrics(pred):
-    """Calculates accuracy and F1 score during evaluation."""
     labels = pred.label_ids
-    preds = pred.prediction.argmax(-1)
-
+    preds = pred.predictions.argmax(-1)
+    
+    # We use 'weighted' F1 to account for any remaining class imbalance
     f1 = f1_score(labels, preds, average="weighted")
     acc = accuracy_score(labels, preds)
-
-    return {'accuracy: acc, "f1': f1}
+    
+    # Make sure this return dictionary has the exact keys "accuracy" and "f1"
+    return {
+        "accuracy": acc, 
+        "f1": f1
+    }
 
 def run_training():
     print("1. Loading label mappings...")
@@ -72,7 +76,7 @@ def run_training():
         weight_decay=0.01,
         load_best_model_at_end=True,
         metric_for_best_model="f1",
-        report_to="ml_flow",
+        report_to="mlflow",
     )
 
     trainer = Trainer(

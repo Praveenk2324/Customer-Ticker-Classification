@@ -3,8 +3,8 @@ from datasets import load_dataset
 from transformers import AutoTokenizer
 
 # --- Configuration Paths ---
-TRAIN_PATH = "data/processed/train_tickets.csv"
-TEST_PATH = "data/processed/test_tickets.csv"
+TRAIN_PATH = "data/preprocessed/train_tickets.csv"
+TEST_PATH = "data/preprocessed/test_tickets.csv"
 TOKENIZED_DIR = "data/tokenized/"
 
 # From our EDA, we decided on a safe max length (adjust if your EDA said otherwise!)
