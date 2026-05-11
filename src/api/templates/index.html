@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ticket Router</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        h2 { margin-top: 0; color: #333; }
+        textarea { width: 100%; height: 120px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; resize: none; font-family: inherit; margin-bottom: 15px; box-sizing: border-box;}
+        button { background-color: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold;}
+        button:hover { background-color: #0056b3; }
+        #result-box { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; font-weight: bold; text-align: center; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .loading { text-align: center; color: #666; display: none; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>IT Support AI</h2>
+    <p style="color: #666; font-size: 14px;">Describe your issue below, and our DistilBERT model will route it to the correct department.</p>
+    
+    <textarea id="ticketText" placeholder="e.g., My monitor went black and I can't connect to the VPN..."></textarea>
+    <button onclick="submitTicket()">Route Ticket</button>
+    
+    <div id="loading" class="loading">🧠 AI is analyzing...</div>
+    <div id="result-box"></div>
+</div>
+
+<script>
+    async function submitTicket() {
+        const text = document.getElementById('ticketText').value;
+        const resultBox = document.getElementById('result-box');
+        const loading = document.getElementById('loading');
+
+        if (!text) return;
+
+        // Reset UI
+        resultBox.style.display = 'none';
+        loading.style.display = 'block';
+
+        try {
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ticket_text: text })
+            });
+            
+            const data = await response.json();
+            
+            // Update UI with prediction
+            loading.style.display = 'none';
+            resultBox.textContent = `Routed to: ${data.routed_department}`;
+            resultBox.className = 'success';
+            resultBox.style.display = 'block';
+            
+        } catch (error) {
+            loading.style.display = 'none';
+            resultBox.textContent = 'Error connecting to the AI.';
+            resultBox.style.display = 'block';
+            resultBox.style.backgroundColor = '#f8d7da';
+        }
+    }
+</script>
+
+</body>
+</html>
