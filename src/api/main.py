@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 import torch
+import os
+from fastapi.responses import HTMLResponse
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 # Initialize the API
@@ -22,9 +24,12 @@ model.eval() # Put the model in evaluation (prediction) mode
 class TicketRequest(BaseModel):
     ticket_text: str
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 def home():
-    return {"message": "IT Support AI is Online!"}
+    # Read the HTML file and return it
+    html_path = os.path.join(os.path.dirname(__file__), "templates", "index.html")
+    with open(html_path, "r", encoding="utf-8") as f:
+        return f.read()
 
 @app.post("/predict")
 def predict_department(request: TicketRequest):
